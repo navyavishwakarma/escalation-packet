@@ -101,12 +101,12 @@
     .chart-wrap { margin-top: 22px; padding-top: 17px; border-top: 1px solid var(--line); }
     .chart-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
     canvas { display: block; width: 100%; height: 110px; margin: 8px 0 3px; }
-    .message { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .message { padding: 15px 0; border-bottom: 1px solid var(--line); }
     .message:last-child { border-bottom: 0; padding-bottom: 0; }
-    .message-meta { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--muted); font-size: 11px; }
-    .message-meta strong { color: var(--ink); }
-    .message.customer .message-meta strong { color: var(--coral); }
-    .message p { margin-bottom: 0; line-height: 1.5; }
+    .message-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: var(--muted); font-size: 11px; }
+    .message-meta strong { padding: 4px 7px; color: var(--green); background: var(--green-soft); border-radius: 3px; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; }
+    .message.customer .message-meta strong { color: #963d2e; background: var(--coral-soft); }
+    .message p { margin: 0; color: var(--ink); line-height: 1.55; overflow-wrap: anywhere; }
     .empty { padding: 30px 18px; color: var(--muted); text-align: center; }
     .loading { color: var(--muted); font-style: italic; }
     @media (max-width: 980px) {
@@ -220,7 +220,8 @@
         const separator = message.indexOf(":");
         const speaker = separator > -1 ? message.slice(0, separator) : "Message";
         const body = separator > -1 ? message.slice(separator + 1).trim() : message;
-        return `<div class="message ${speaker.toLowerCase() === "customer" ? "customer" : "agent"}><div class="message-meta"><strong>${escapeHTML(speaker)}</strong><span>Message ${index + 1}</span></div><p>${escapeHTML(body)}</p></div>`;
+        const kind = speaker.toLowerCase() === "customer" ? "customer" : "agent";
+        return `<div class="message ${kind}"><div class="message-meta"><strong>${escapeHTML(speaker)}</strong><span>Message ${index + 1}</span></div><p>${escapeHTML(body)}</p></div>`;
       }).join("");
     }
 
