@@ -254,7 +254,7 @@
         renderQueue();
         if (keys.length) selectTicket(keys[0]);
       } catch (error) {
-        document.getElementById("ticket-list").innerHTML = `<div class="empty">Could not load queue. Start the backend at 127.0.0.1:8000.</div>`;
+        document.getElementById("ticket-list").innerHTML = `<div class="empty">Could not load queue.<br><small>${escapeHTML(error.message)}</small></div>`;
         document.getElementById("last-updated").textContent = "Offline";
       }
     }

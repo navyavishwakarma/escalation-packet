@@ -115,11 +115,13 @@ def fallback_packet(messages: list[str]) -> str:
 
 
 @app.get("/conversations")
+@app.get("/api/conversations")
 def get_conversations():
     return SAMPLES
 
 
 @app.post("/analyze")
+@app.post("/api/analyze")
 def analyze(convo: Conversation):
     transcript = "\n".join(convo.messages)
     prompt = f"""You are analyzing a customer support conversation.
