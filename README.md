@@ -50,6 +50,18 @@ Open http://127.0.0.1:5500 in your browser and select a ticket. The dashboard ca
 
 Opening `frontend/index.html` directly also works in most browsers, but the local frontend server avoids browser file restrictions.
 
+## Deploy a shareable live website
+
+The repository includes `render.yaml` so Render can deploy the backend and frontend as one web service.
+
+1. Create an account at https://render.com and choose **New +** -> **Blueprint**.
+2. Connect the GitHub repository `navyavishwakarma/escalation-packet`.
+3. Confirm the service created from `render.yaml`.
+4. In the service's **Environment** settings, add `GEMINI_API_KEY` with your real key.
+5. Deploy the service.
+
+Render will provide a URL like `https://escalation-packet.onrender.com`. Share that URL; it serves the dashboard and API together. The free service may take a few seconds to wake up after inactivity.
+
 Your `.env` file will NOT be uploaded (it's in `.gitignore`) — this is intentional, it protects your API key.
 
 ## If something breaks

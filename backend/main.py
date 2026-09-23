@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import requests
 import os
 import json
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -182,3 +184,7 @@ Conversation:
             cleaned = cleaned[4:].strip()
 
     return {"result": cleaned}
+
+
+frontend_path = Path(__file__).resolve().parent.parent / "frontend"
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
