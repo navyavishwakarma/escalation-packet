@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escalation Desk</title>
+  <style>
+    :root {
+      --paper: #f5f2eb;
+      --white: #fffdf8;
+      --ink: #25231f;
+      --muted: #77736b;
+      --line: #ded9cf;
+      --coral: #c9573f;
+      --coral-soft: #f3ddd5;
+      --green: #3f785d;
+      --green-soft: #dcebe0;
+      --amber: #a96c20;
+      --amber-soft: #f3e7cf;
+      --shadow: 0 8px 30px rgba(42, 35, 24, .07);
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Trebuchet MS", Verdana, sans-serif; font-size: 14px; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .topbar { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 34px; background: var(--white); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; color: var(--white); background: var(--coral); border-radius: 50%; font-weight: 700; }
+    .brand-name { font: 700 20px Georgia, serif; letter-spacing: -.02em; }
+    .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 12px; }
+    .agent { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; }
+    .avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #d8e4dc; color: var(--green); }
+
+    .shell { max-width: 1440px; margin: 0 auto; padding: 34px; }
+    .intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font: 700 34px Georgia, serif; letter-spacing: -.03em; }
+    .intro p { margin-bottom: 0; color: var(--muted); }
+    .date-label { color: var(--muted); font-size: 12px; text-align: right; }
+    .date-label strong { display: block; color: var(--ink); font-size: 14px; margin-top: 4px; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+    .stat { padding: 17px 18px; background: var(--white); border: 1px solid var(--line); border-radius: 5px; }
+    .stat-label { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .stat-value { margin-top: 8px; font: 700 26px Georgia, serif; }
+    .stat-note { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .stat.alert .stat-value { color: var(--coral); }
+
+    .workspace { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .queue, .case-header, .packet-section, .conversation { background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .queue { overflow: hidden; }
+    .queue-head { padding: 18px; border-bottom: 1px solid var(--line); }
+    .queue-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    h2 { margin-bottom: 0; font: 700 20px Georgia, serif; }
+    .count { color: var(--coral); font-weight: 700; }
+    .search { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); outline: none; }
+    .search:focus { border-color: var(--coral); }
+    .filters { display: flex; gap: 6px; margin-top: 10px; }
+    .filter { padding: 6px 9px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 3px; font-size: 11px; }
+    .filter.active { color: var(--ink); background: var(--coral-soft); border-color: var(--coral); }
+    .ticket-list { max-height: 650px; overflow-y: auto; }
+    .ticket { width: 100%; padding: 15px 18px; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--line); text-align: left; }
+    .ticket:hover, .ticket.active { background: #fbf0e9; }
+    .ticket.active { box-shadow: inset 3px 0 0 var(--coral); }
+    .ticket-top, .ticket-bottom { display: flex; justify-content: space-between; gap: 12px; }
+    .ticket-id, .ticket-age { color: var(--muted); font-size: 11px; }
+    .ticket-name { margin: 7px 0 4px; font-weight: 700; }
+    .ticket-preview { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .ticket-bottom { align-items: center; margin-top: 10px; }
+    .tag { display: inline-block; padding: 3px 7px; border-radius: 3px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .tag.high { color: #963d2e; background: var(--coral-soft); }
+    .tag.medium { color: #8b5b1d; background: var(--amber-soft); }
+    .tag.low { color: var(--green); background: var(--green-soft); }
+    .category { color: var(--muted); font-size: 11px; }
+
+    .case { min-width: 0; }
+    .case-header { display: flex; justify-content: space-between; gap: 24px; padding: 22px 24px; }
+    .eyebrow { margin-bottom: 7px; color: var(--coral); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    h3 { margin-bottom: 6px; font: 700 25px Georgia, serif; }
+    .case-subtitle { margin-bottom: 0; color: var(--muted); }
+    .case-actions { display: flex; align-items: flex-start; gap: 8px; }
+    .action { padding: 9px 12px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 3px; font-size: 12px; font-weight: 700; }
+    .action.primary { color: var(--white); background: var(--green); border-color: var(--green); }
+    .detail-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 18px; margin-top: 18px; }
+    .packet-section, .conversation { padding: 22px; }
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .section-head h2 { font-size: 18px; }
+    .section-note { color: var(--muted); font-size: 11px; }
+    .summary { padding: 17px 0; font: 18px/1.45 Georgia, serif; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .fact-label { margin-bottom: 7px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .fact-value { line-height: 1.5; }
+    .fact-value ul { margin: 0; padding-left: 18px; }
+    .fact-value li + li { margin-top: 5px; }
+    .urgency { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; text-transform: capitalize; }
+    .urgency::before { width: 8px; height: 8px; background: currentColor; border-radius: 50%; content: ""; }
+    .urgency.high { color: var(--coral); }
+    .urgency.medium { color: var(--amber); }
+    .urgency.low { color: var(--green); }
+    .chart-wrap { margin-top: 22px; padding-top: 17px; border-top: 1px solid var(--line); }
+    .chart-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
+    canvas { display: block; width: 100%; height: 110px; margin: 8px 0 3px; }
+    .message { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .message:last-child { border-bottom: 0; padding-bottom: 0; }
+    .message-meta { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--muted); font-size: 11px; }
+    .message-meta strong { color: var(--ink); }
+    .message.customer .message-meta strong { color: var(--coral); }
+    .message p { margin-bottom: 0; line-height: 1.5; }
+    .empty { padding: 30px 18px; color: var(--muted); text-align: center; }
+    .loading { color: var(--muted); font-style: italic; }
+    @media (max-width: 980px) {
+      .shell { padding: 24px; }
+      .workspace, .detail-grid { grid-template-columns: 1fr; }
+      .ticket-list { display: grid; grid-template-columns: repeat(2, 1fr); max-height: none; }
+      .ticket:nth-last-child(-n + 2) { border-bottom: 0; }
+    }
+    @media (max-width: 620px) {
+      .topbar { padding: 0 18px; }
+      .topbar-right > span { display: none; }
+      .shell { padding: 20px 14px; }
+      h1 { font-size: 28px; }
+      .intro { display: block; }
+      .date-label { margin-top: 14px; text-align: left; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .case-header { display: block; }
+      .case-actions { margin-top: 16px; }
+      .ticket-list { display: block; }
+      .facts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">E</span><span class="brand-name">Escalation Desk</span></div>
+    <div class="topbar-right"><span>Tuesday, September 23, 2026</span><span class="agent"><span class="avatar">AM</span> Alex Morgan</span></div>
+  </header>
+
+  <main class="shell">
+    <div class="intro">
+      <div><h1>Good morning, Alex.</h1><p>Review the cases that need a human decision before the next reply.</p></div>
+      <div class="date-label">QUEUE STATUS<strong><span id="last-updated">Updating</span></strong></div>
+    </div>
+    <section class="stats" aria-label="Queue overview">
+      <div class="stat alert"><div class="stat-label">Needs attention</div><div class="stat-value" id="stat-total">-</div><div class="stat-note">escalated conversations</div></div>
+      <div class="stat"><div class="stat-label">High urgency</div><div class="stat-value" id="stat-high">-</div><div class="stat-note">SLA risk in this queue</div></div>
+      <div class="stat"><div class="stat-label">Avg. first reply</div><div class="stat-value">18m</div><div class="stat-note">down 6m this week</div></div>
+      <div class="stat"><div class="stat-label">Bot containment</div><div class="stat-value">72%</div><div class="stat-note">last 30 days</div></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="queue">
+        <div class="queue-head">
+          <div class="queue-title"><h2>Escalated queue</h2><span class="count" id="queue-count">-</span></div>
+          <input class="search" id="search" type="search" placeholder="Search customer or ticket">
+          <div class="filters" aria-label="Filter tickets"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="high">High risk</button><button class="filter" data-filter="billing">Billing</button></div>
+        </div>
+        <div class="ticket-list" id="ticket-list"><div class="empty">Loading queue...</div></div>
+      </aside>
+
+      <section class="case" id="case-view"><div class="case-header"><div><div class="eyebrow">Context packet</div><h3>Select a ticket</h3><p class="case-subtitle">Choose an escalated conversation to inspect the handoff.</p></div></div></section>
+    </section>
+  </main>
+
+  <script>
+    const API = "http://127.0.0.1:8000";
+    const TICKET_META = {
+      billing: { id: "#4521", name: "R. Fernandez", category: "Billing", age: "12m", urgency: "high", preview: "Charged twice for subscription" },
+      delivery: { id: "#4522", name: "A. Okafor", category: "Delivery", age: "18m", urgency: "medium", preview: "Order still has not arrived" },
+      bug: { id: "#4523", name: "J. Lin", category: "Product issue", age: "24m", urgency: "high", preview: "App crashes on photo upload" },
+      messy: { id: "#4524", name: "S. Patel", category: "General", age: "31m", urgency: "medium", preview: "Conversation broke down" },
+      refund: { id: "#4525", name: "M. Chen", category: "Refund", age: "37m", urgency: "high", preview: "Refund missing after return" },
+      login: { id: "#4526", name: "D. Williams", category: "Account access", age: "44m", urgency: "high", preview: "Locked out after phone change" },
+      cancellation: { id: "#4527", name: "K. Singh", category: "Subscription", age: "52m", urgency: "high", preview: "Cancel plan before renewal" },
+      outage: { id: "#4528", name: "Northstar Labs", category: "Service outage", age: "1h", urgency: "high", preview: "Team cannot access dashboard" },
+      invoice: { id: "#4529", name: "L. Garcia", category: "Billing", age: "1h", urgency: "medium", preview: "Invoice does not match usage" },
+      verification: { id: "#4530", name: "E. Brown", category: "Verification", age: "2h", urgency: "medium", preview: "Identity check is pending" }
+    };
+    let conversations = {};
+    let activeKey = null;
+    let activeFilter = "all";
+
+    const escapeHTML = value => String(value ?? "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
+    const asList = value => Array.isArray(value) ? value : (value ? [value] : []);
+
+    function renderQueue() {
+      const query = document.getElementById("search").value.toLowerCase().trim();
+      const list = document.getElementById("ticket-list");
+      const entries = Object.entries(conversations).filter(([key]) => {
+        const meta = TICKET_META[key] || {};
+        const searchable = `${key} ${meta.id} ${meta.name} ${meta.category} ${meta.preview}`.toLowerCase();
+        return (!query || searchable.includes(query)) && (activeFilter === "all" || meta.urgency === activeFilter || meta.category?.toLowerCase().includes(activeFilter));
+      });
+      document.getElementById("queue-count").textContent = entries.length;
+      list.innerHTML = entries.length ? entries.map(([key]) => {
+        const meta = TICKET_META[key] || { id: "#----", name: key, category: "Uncategorized", age: "", urgency: "medium", preview: "" };
+        return `<button class="ticket ${activeKey === key ? "active" : ""}" data-key="${escapeHTML(key)}"><div class="ticket-top"><span class="ticket-id">${escapeHTML(meta.id)}</span><span class="ticket-age">${escapeHTML(meta.age)}</span></div><div class="ticket-name">${escapeHTML(meta.name)}</div><div class="ticket-preview">${escapeHTML(meta.preview)}</div><div class="ticket-bottom"><span class="tag ${escapeHTML(meta.urgency)}">${escapeHTML(meta.urgency)} urgency</span><span class="category">${escapeHTML(meta.category)}</span></div></button>`;
+      }).join("") : `<div class="empty">No tickets match this view.</div>`;
+      list.querySelectorAll(".ticket").forEach(ticket => ticket.addEventListener("click", () => selectTicket(ticket.dataset.key)));
+    }
+
+    function drawSentimentChart(canvas, values) {
+      const points = (values || []).map(Number).filter(Number.isFinite);
+      const ratio = window.devicePixelRatio || 1;
+      const ctx = canvas.getContext("2d");
+      canvas.width = canvas.offsetWidth * ratio; canvas.height = 110 * ratio; ctx.scale(ratio, ratio);
+      const w = canvas.offsetWidth, h = 110;
+      ctx.clearRect(0, 0, w, h); ctx.strokeStyle = "#ded9cf"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+      if (!points.length) return;
+      const step = points.length === 1 ? w : w / (points.length - 1);
+      ctx.strokeStyle = "#c9573f"; ctx.lineWidth = 2; ctx.beginPath();
+      points.forEach((value, index) => { const x = index * step, y = h / 2 - Math.max(-1, Math.min(1, value)) * (h / 2 - 12); index ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+      ctx.fillStyle = "#c9573f";
+      points.forEach((value, index) => { const x = index * step, y = h / 2 - Math.max(-1, Math.min(1, value)) * (h / 2 - 12); ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
+    }
+
+    function renderTranscript(messages) {
+      return messages.map((message, index) => {
+        const separator = message.indexOf(":");
+        const speaker = separator > -1 ? message.slice(0, separator) : "Message";
+        const body = separator > -1 ? message.slice(separator + 1).trim() : message;
+        return `<div class="message ${speaker.toLowerCase() === "customer" ? "customer" : "agent"}><div class="message-meta"><strong>${escapeHTML(speaker)}</strong><span>Message ${index + 1}</span></div><p>${escapeHTML(body)}</p></div>`;
+      }).join("");
+    }
+
+    async function selectTicket(key) {
+      activeKey = key; renderQueue();
+      const meta = TICKET_META[key] || { id: "#----", name: key, category: "Support", urgency: "medium", preview: "" };
+      const messages = conversations[key];
+      const view = document.getElementById("case-view");
+      view.innerHTML = `<div class="case-header"><div><div class="eyebrow">${escapeHTML(meta.category)} / ${escapeHTML(meta.id)}</div><h3>${escapeHTML(meta.name)}</h3><p class="case-subtitle">${escapeHTML(meta.preview)}</p></div><div class="case-actions"><button class="action">Assign</button><button class="action primary">Reply to customer</button></div></div><div class="detail-grid"><div class="packet-section"><div class="section-head"><h2>Context packet</h2><span class="section-note">Generated just now</span></div><p class="loading" id="packet-loading">Reading conversation and preparing handoff...</p></div><div class="conversation"><div class="section-head"><h2>Conversation</h2><span class="section-note">${messages.length} messages</span></div>${renderTranscript(messages)}</div></div>`;
+      try {
+        const response = await fetch(`${API}/analyze`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages }) });
+        if (!response.ok) throw new Error(`Backend returned ${response.status}`);
+        const data = await response.json();
+        const parsed = JSON.parse(data.result);
+        const packet = document.querySelector(".packet-section");
+        packet.innerHTML = `<div class="section-head"><h2>Context packet</h2><span class="section-note">Generated just now</span></div><div class="summary">${escapeHTML(parsed.issue_summary || "No issue summary available.")}</div><div class="facts"><div><div class="fact-label">Urgency / SLA risk</div><div class="fact-value"><span class="urgency ${(parsed.urgency || "medium").toLowerCase()}">${escapeHTML(parsed.urgency || "Unknown")}</span></div></div><div><div class="fact-label">Customer tone</div><div class="fact-value">${escapeHTML(parsed.tone || "Unknown")}</div></div></div><div class="facts"><div><div class="fact-label">Steps already attempted</div><div class="fact-value"><ul>${asList(parsed.attempted_fixes).map(item => `<li>${escapeHTML(item)}</li>`).join("") || "<li>None recorded</li>"}</ul></div></div><div><div class="fact-label">Key facts</div><div class="fact-value"><ul>${asList(parsed.key_facts).map(item => `<li>${escapeHTML(item)}</li>`).join("") || "<li>None recorded</li>"}</ul></div></div></div><div class="chart-wrap"><div class="fact-label">Customer sentiment by message</div><div class="chart-labels"><span>Positive</span><span>Neutral</span><span>Negative</span></div><canvas id="sentiment-canvas"></canvas></div>`;
+        drawSentimentChart(document.getElementById("sentiment-canvas"), parsed.sentiment_trend);
+      } catch (error) {
+        document.querySelector(".packet-section").innerHTML = `<div class="section-head"><h2>Context packet</h2></div><p style="color: var(--coral)">Unable to generate packet: ${escapeHTML(error.message)}</p>`;
+      }
+    }
+
+    async function loadTickets() {
+      try {
+        const response = await fetch(`${API}/conversations`);
+        conversations = await response.json();
+        const keys = Object.keys(conversations);
+        document.getElementById("stat-total").textContent = keys.length;
+        document.getElementById("stat-high").textContent = keys.filter(key => TICKET_META[key]?.urgency === "high").length;
+        document.getElementById("last-updated").textContent = "Live queue connected";
+        renderQueue();
+        if (keys.length) selectTicket(keys[0]);
+      } catch (error) {
+        document.getElementById("ticket-list").innerHTML = `<div class="empty">Could not load queue. Start the backend at 127.0.0.1:8000.</div>`;
+        document.getElementById("last-updated").textContent = "Offline";
+      }
+    }
+
+    document.getElementById("search").addEventListener("input", renderQueue);
+    document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => { activeFilter = button.dataset.filter; document.querySelectorAll(".filter").forEach(item => item.classList.remove("active")); button.classList.add("active"); renderQueue(); }));
+    loadTickets();
+  </script>
+</body>
+</html>
