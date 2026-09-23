@@ -1,5 +1,37 @@
 # Escalation Context Packet Generator
 
+> A support-agent dashboard that turns an escalated conversation into a structured context packet.
+
+## Free deployment with Hugging Face Spaces
+
+Hugging Face Spaces can run this app publicly on a free CPU Docker Space. No Render payment setup is required.
+
+1. Create an account at https://huggingface.co and open **New Space**.
+2. Choose a Space name, select **Docker** as the SDK, choose **CPU basic**, and set visibility to **Public**.
+3. In the new Space, open **Files** -> **Add file** -> **Upload files** and upload the contents of this repository, including `Dockerfile`.
+4. Open **Settings** -> **Variables and secrets** -> **New secret** and add:
+
+	```text
+	GEMINI_API_KEY=your_new_key
+	```
+
+5. Wait for the build to finish, then open the Space's **App** tab. The public link will look like:
+	`https://huggingface.co/spaces/YOUR-USERNAME/YOUR-SPACE-NAME`
+
+The Space runs the frontend and backend together. The local `.env` file is not uploaded or needed.
+
+## Deploy with Vercel
+
+Vercel can host this project using its Python serverless runtime.
+
+1. Open https://vercel.com and sign in with GitHub.
+2. Choose **Add New** -> **Project** and import `navyavishwakarma/escalation-packet`.
+3. Leave the framework preset as **Other**. Vercel will use `vercel.json`.
+4. Add an environment variable named `GEMINI_API_KEY` with your Gemini key.
+5. Click **Deploy**.
+
+Vercel will provide a public URL such as `https://escalation-packet.vercel.app`. The `api/index.py` serverless function handles `/api/analyze` and `/api/conversations`, while the same deployment serves the dashboard.
+
 ## Run from GitHub
 
 Clone the repository and enter the project folder:

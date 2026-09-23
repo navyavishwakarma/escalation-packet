@@ -163,7 +163,8 @@
   </main>
 
   <script>
-    const API = window.ESCALATION_API_URL || (window.location.port === "8000" ? window.location.origin : "http://127.0.0.1:8000");
+    const localFrontend = window.location.protocol === "file:" || window.location.port === "5500";
+    const API = window.ESCALATION_API_URL || (localFrontend ? "http://127.0.0.1:8000" : `${window.location.origin}/api`);
     const TICKET_META = {
       billing: { id: "#4521", name: "R. Fernandez", category: "Billing", age: "12m", urgency: "high", preview: "Charged twice for subscription" },
       delivery: { id: "#4522", name: "A. Okafor", category: "Delivery", age: "18m", urgency: "medium", preview: "Order still has not arrived" },
