@@ -30,7 +30,7 @@ Vercel can host this project using its Python serverless runtime.
 4. Add an environment variable named `GEMINI_API_KEY` with your Gemini key.
 5. Click **Deploy**.
 
-Vercel will provide a public URL such as `https://escalation-packet.vercel.app`. The `api/index.py` serverless function handles `/api/analyze` and `/api/conversations`, while the same deployment serves the dashboard.
+Vercel will provide a public URL such as `https://escalation-packet.vercel.app`. Vercel loads the FastAPI app from `backend.main:app`, which serves both the dashboard and the `/conversations` and `/analyze` endpoints.
 
 ## Run from GitHub
 
