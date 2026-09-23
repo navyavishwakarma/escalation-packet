@@ -188,5 +188,11 @@ Conversation:
     return {"result": cleaned}
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 frontend_path = Path(__file__).resolve().parent.parent / "frontend"
-app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+if frontend_path.is_dir():
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
