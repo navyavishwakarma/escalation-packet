@@ -246,7 +246,11 @@
     async function loadTickets() {
       try {
         const response = await fetch(`${API}/conversations`);
+        if (!response.ok) throw new Error(`Queue API returned ${response.status}`);
         conversations = await response.json();
+        if (!conversations || Array.isArray(conversations) || typeof conversations !== "object" || conversations.detail) {
+          throw new Error("Queue API returned an invalid conversation list");
+        }
         const keys = Object.keys(conversations);
         document.getElementById("stat-total").textContent = keys.length;
         document.getElementById("stat-high").textContent = keys.filter(key => TICKET_META[key]?.urgency === "high").length;
