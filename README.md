@@ -2,6 +2,8 @@
 
 > A support-agent dashboard that turns an escalated conversation into a structured context packet.
 
+**Live demo:** https://escalation-packet.vercel.app/
+
 ## Free deployment with Hugging Face Spaces
 
 Hugging Face Spaces can run this app publicly on a free CPU Docker Space. No Render payment setup is required.
