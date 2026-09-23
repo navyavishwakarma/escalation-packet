@@ -1,5 +1,14 @@
 # Escalation Context Packet Generator
 
+## Run from GitHub
+
+Clone the repository and enter the project folder:
+
+```powershell
+git clone https://github.com/navyavishwakarma/escalation-packet.git
+cd escalation-packet
+```
+
 ## Setup (5 minutes)
 
 ### 1. Get a free Gemini API key
@@ -9,7 +18,7 @@
 
 ### 2. Add your key
 - Go into the `backend` folder
-- Rename `.env.example` to `.env`
+- Copy `.env.example` to `.env`
 - Open `.env` and replace `paste-your-key-here` with your real key
 
 ### 3. Install and run the backend
@@ -22,7 +31,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-(On Mac/Linux, use `source venv/bin/activate` instead of `venv\Scripts\activate.bat`)
+(On Mac/Linux, use `source venv/bin/activate` instead of `venv\Scripts\activate.bat`.)
 
 Leave this terminal running. You should see:
 ```
@@ -30,20 +39,16 @@ Uvicorn running on http://127.0.0.1:8000
 ```
 
 ### 4. Open the frontend
-Just double-click `frontend/index.html` to open it in your browser.
-Click any ticket button — it should call your backend and show the generated packet.
 
-## Push to GitHub
+Keep the backend terminal running. In a second terminal from the project root, run:
 
+```powershell
+python -m http.server 5500 --directory frontend
 ```
-cd escalation-packet
-git init
-git add .
-git commit -m "initial commit"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/escalation-packet.git
-git push -u origin main
-```
+
+Open http://127.0.0.1:5500 in your browser and select a ticket. The dashboard calls the backend at `http://127.0.0.1:8000`.
+
+Opening `frontend/index.html` directly also works in most browsers, but the local frontend server avoids browser file restrictions.
 
 Your `.env` file will NOT be uploaded (it's in `.gitignore`) — this is intentional, it protects your API key.
 
